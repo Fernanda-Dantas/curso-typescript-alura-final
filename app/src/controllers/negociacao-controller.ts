@@ -3,6 +3,7 @@ import { logarTempoDeExecucao } from '../decorators/logar-tempo-exec.js';
 import { DiasDaSemana } from '../enums/dias-da-semana.js';
 import { Negociacao } from '../models/negociacao.js';
 import { Negociacoes } from '../models/negociacoes.js';
+import { NegociacoesService } from '../services/negociacoes-service.js';
 import { MensagemView } from '../views/mensagem-view.js';
 import { NegociacoesView } from '../views/negociacoes-view.js';
 
@@ -19,6 +20,7 @@ export class NegociacaoController {
     private negociacoes = new Negociacoes();
     private negociacoesView = new NegociacoesView('#negociacoesView');
     private mensagemView = new MensagemView('#mensagemView');
+    private negociacoesService = new NegociacoesService();
 
     constructor() {
 
@@ -46,8 +48,16 @@ export class NegociacaoController {
  
     }
 
-    importarDados(): void {
-        alert('teste');
+    // Consome a API
+    public importarDados(): void {
+        this.negociacoesService
+        .obterNegociacoesDoDia()
+        .then(negociacaoDeHoje => {
+            for(let negociacao of negociacaoDeHoje) {
+                this.negociacoes.adiciona(negociacao);
+            }
+                this.negociacoesView.update(this.negociacoes);
+        });
     }
 
     private ehDiaUtil(data: Date) {
